@@ -12,6 +12,7 @@ namespace CarsApp.ConsoleUI
             Vehicle vehicle = new Car("Toyota", "Camry", 2020);
 
             var service = new OilChange();
+            //service = new EngineRepair();
             var manager = new ServiceManager();
 
             manager.ExecuteService(vehicle, service);

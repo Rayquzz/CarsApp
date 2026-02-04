@@ -1,0 +1,14 @@
+Laborator 1 - Recapitulare OOP și Principiile SOLID
+Condiție:  
+În cadrul acestui laborator, studenții trebuie să definească și să implementeze un set de clase utilizând conceptele fundamentale ale Programării Orientate pe Obiecte (OOP): încapsulare, moștenire și polimorfism. Fiecare clasă trebuie să respecte principiile SOLID pentru a asigura claritate, flexibilitate și întreținere ușoară a codului.
+Pași de realizare:
+1. Definirea structurii aplicației: Studenții vor realiza o diagramă UML de bază care descrie entitățile principale din domeniul ales și relațiile dintre acestea.
+2. Implementarea claselor de bază: Se vor crea clase de bază pentru entitățile principale, utilizând moștenirea și încapsularea pentru a organiza corect datele și comportamentul obiectelor.
+3. Aplicarea principiilor SOLID:
+o SRP (Single Responsibility Principle): Fiecare clasă trebuie să aibă o singură responsabilitate clar definită.
+o OCP (Open/Closed Principle): Clasele trebuie să fie extensibile fără a necesita modificări majore.
+o LSP (Liskov Substitution Principle): Subclasele trebuie să poată înlocui clasele de bază fără a afecta funcționalitatea.
+o ISP (Interface Segregation Principle): Se vor defini interfețe specifice pentru a evita impunerea unor metode inutile asupra claselor.
+o DIP (Dependency Inversion Principle): Se va utiliza injecția de dependențe pentru a evita legături strânse între module.
+4. Refactorizarea codului: Studenții vor analiza codul și vor aplica modificările necesare pentru a-l face mai modular și mai ușor de întreținut.
+5. Prezentarea rezultatului: La final, fiecare student va explica structura codului său și modul în care a aplicat principiile OOP și SOLID.

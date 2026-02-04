@@ -1,3 +1,5 @@
+--- Clean Arhitecture ---
+
 Laborator 1 - Recapitulare OOP și Principiile SOLID
 Condiție:  
 În cadrul acestui laborator, studenții trebuie să definească și să implementeze un set de clase utilizând conceptele fundamentale ale Programării Orientate pe Obiecte (OOP): încapsulare, moștenire și polimorfism. Fiecare clasă trebuie să respecte principiile SOLID pentru a asigura claritate, flexibilitate și întreținere ușoară a codului.

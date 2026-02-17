@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CarsApp.application\CarsApp.application.csproj" />
     <ProjectReference Include="..\CarsApp.Domain\CarsApp.Domain.csproj" />
   </ItemGroup>
 

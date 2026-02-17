@@ -1,0 +1,19 @@
+Laborator 2 - Paternurile de proiectare creționale: Factory Method și Abstract Factory
+Condiție: 
+În acest laborator, studenții vor explora și implementa două paternuri de proiectare creționale esențiale: Factory Method și Abstract Factory. Aceste paternuri sunt utilizate pentru a gestiona crearea obiectelor într-un mod flexibil, reducând dependențele dintre module și îmbunătățind scalabilitatea aplicației. Fiecare student va implementa o soluție aplicabilă domeniului ales, utilizând aceste paternuri pentru a îmbunătăți modularitatea și reutilizarea codului.
+Pași de realizare:
+1. Factory Method:
+o Crearea unei structuri în care obiectele sunt instanțiate prin intermediul unei metode de fabrică, fără a specifica direct clasa concretă.
+o Se vor defini interfețe pentru obiectele ce trebuie create și clase concrete care implementează aceste interfețe.
+o Se va crea o clasă abstractă cu o metodă de fabrică ce returnează un obiect de tipul interfeței definite.
+o Exemplu: Un sistem de rezervări care gestionează diferite tipuri de transport (avion, tren, autobuz) folosind o fabrică pentru a crea instanțe specifice fiecărui tip de transport.
+2. Abstract Factory:
+o Definirea unei interfețe pentru crearea unei familii de obiecte înrudite fără a specifica clasele concrete.
+o Se va implementa o fabrică abstractă care conține metode pentru crearea mai multor tipuri de obiecte conexe.
+o Se vor crea fabrici concrete care implementează interfața și returnează obiectele specifice domeniului ales.
+o Exemplu: Un sistem de gestionare a interfeței utilizator (UI) care poate genera interfețe grafice pentru diferite platforme (Windows, Mac, Linux) utilizând un Abstract Factory.
+3. Testare și Refactorizare:
+o Implementarea testelor unitare pentru fiecare patern utilizat.
+o Refactorizarea codului pentru a îmbunătăți claritatea și a reduce dependențele inutile.
+4. Prezentarea rezultatului:
+o Explicarea fiecărui patern implementat, beneficiile acestuia și modul în care a fost aplicat în proiect.

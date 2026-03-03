@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarsApp.Domain.Entities
 {
-    internal class Truck : Vehicle
+    public class Truck : Vehicle
     {
         public Truck(string make, string model, int year)
             : base(make, model, year) 

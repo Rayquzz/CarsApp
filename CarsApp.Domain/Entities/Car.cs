@@ -13,9 +13,17 @@ namespace CarsApp.Domain.Entities
         {
         }
 
-        public override string GetVehicleType()
+
+        // Constructor de copiere — apelează base(source) pentru câmpurile din Vehicle
+        // Identic cu: constructor Rectangle(source: Rectangle) -> super(source)
+        protected Car(Car source) : base(source) 
         {
-            return "Car";
-        }   
+        }
+
+        public override string GetVehicleType() => "Car";
+
+
+        // Clone returnează new Car(this) — exact ca în exemplul abstract
+        public override Vehicle Clone() => new Car(this);
     }
 }

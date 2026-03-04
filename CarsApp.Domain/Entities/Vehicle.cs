@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CarsApp.Domain.Prototype;
 
 namespace CarsApp.Domain.Entities
 {
-    public abstract class Vehicle
+    public abstract class Vehicle : IPrototype<Vehicle>
     {
         public string Make { get; protected set; }
         public string Model { get; protected set; }
@@ -19,7 +20,15 @@ namespace CarsApp.Domain.Entities
             Year = year;
 
         }
+        protected Vehicle(Vehicle source) 
+        {
+            Make = source.Make;
+            Model = source.Model;
+            Year = source.Year;
+        }
 
         public abstract string GetVehicleType();
+
+        public abstract Vehicle Clone();
     }
 }

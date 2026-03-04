@@ -5,6 +5,7 @@ using CarsApp.Domain.Entities;
 using CarsApp.Infrastructure.Builder;
 using CarsApp.Infrastructure.Factories.AbstractFactory;
 using CarsApp.Infrastructure.Factories.FactoryMethod;
+using CarsApp.Infrastructure.Prototype;
 using CarsApp.Infrastructure.Services;
 using System.Diagnostics;
 
@@ -172,7 +173,7 @@ namespace CarsApp.ConsoleUI
                 Console.WriteLine("   LAB 3 — Creational Patterns");
                 Console.WriteLine("==============================");
                 Console.WriteLine("1. Builder");
-                Console.WriteLine("2. Prototype  (in curand)");
+                Console.WriteLine("2. Prototype");
                 Console.WriteLine("3. Singleton  (in curand)");
                 Console.WriteLine("0. Inapoi");
                 Console.WriteLine("------------------------------");
@@ -181,10 +182,7 @@ namespace CarsApp.ConsoleUI
                 switch (Console.ReadLine())
                 {
                     case "1": DemoBuilder(); break;
-                    case "2":
-                        Console.WriteLine("  Prototype — nu este inca implementat.");
-                        Pause();
-                        break;
+                    case "2": DemoPrototype(); break;
                     case "3":
                         Console.WriteLine("  Singleton — nu este inca implementat.");
                         Pause();
@@ -218,7 +216,7 @@ namespace CarsApp.ConsoleUI
             director.BuildUrgentRepair(builder, vehicle, "Brake Repair");
             PrintOrder(builder.GetProduct());
 
-            // VIP prin Director
+            // VIP prin Directorq
             Console.WriteLine("  >> BuildVipService (Director):");
             director.BuildVipService(builder, vehicle);
             PrintOrder(builder.GetProduct());
@@ -250,6 +248,56 @@ namespace CarsApp.ConsoleUI
             Console.WriteLine($"    Date      : {order.ScheduledDate:dd.MM.yyyy}");
             Console.WriteLine();
         }
+
+        // -────────────────────────────────────────
+        // Demo Prototype 
+        // -────────────────────────────────────────
+        static void DemoPrototype()
+        {
+            Console.Clear();
+            Console.WriteLine("── Prototype ───────────────────");
+            Console.WriteLine("Clonare vehicule fara a cunoaste clasa concreta.");
+            Console.WriteLine();
+
+            // 1. Clone direct pe obiect — echivalent cu circle.clone() din exemplu
+            Console.WriteLine("  >> Clone direct:");
+            var originalCar = new Car("Toyota", "Camry", 2020);
+            var clonedCar = originalCar.Clone();
+            Console.WriteLine($"    Original : {originalCar.Make} {originalCar.Model} | GetHashCode: {originalCar.GetHashCode()}");
+            Console.WriteLine($"    Clona    : {clonedCar.Make} {clonedCar.Model} | GetHashCode: {clonedCar.GetHashCode()}");
+            Console.WriteLine($"    Sunt obiecte diferite: {!ReferenceEquals(originalCar, clonedCar)}");
+            Console.WriteLine();
+
+            // 2. Clone prin polimorfism — echivalent cu foreach (s in shapes) s.clone()
+            // Nu știm tipul exact, apelăm Clone() pe Vehicle și primim tipul corect
+            Console.WriteLine("  >> Clone polimorfic (nu cunoastem tipul concret):");
+            var vehicles = new List<Vehicle>
+    {
+        new Car("Honda", "Civic", 2021),
+        new Truck("Ford", "F-150", 2022, 3000),
+        new Motorcycle("Yamaha", "MT-07", 2023, false)
+    };
+
+            var clones = vehicles.Select(v => v.Clone()).ToList();
+            foreach (var clone in clones)
+                Console.WriteLine($"    Tip: {clone.GetVehicleType()} | {clone.Make} {clone.Model} ({clone.Year})");
+            Console.WriteLine();
+
+            // 3. Prototype Registry — prototipuri pre-configurate
+            Console.WriteLine("  >> Prototype Registry:");
+            var registry = new VehiclePrototypeRegistry();
+            registry.Register("standard-car", new Car("Toyota", "Corolla", 2024));
+            registry.Register("heavy-truck", new Truck("Volvo", "FH16", 2023, 20000));
+            registry.Register("sport-moto", new Motorcycle("Ducati", "Panigale", 2024));
+
+            var myCar = registry.GetClone("standard-car");
+            var myTruck = registry.GetClone("heavy-truck");
+            Console.WriteLine($"    Din registry: {myCar.GetVehicleType()} — {myCar.Make} {myCar.Model}");
+            Console.WriteLine($"    Din registry: {myTruck.GetVehicleType()} — {myTruck.Make} {myTruck.Model}");
+
+            Pause();
+        }
+
 
         static void Pause()
         {

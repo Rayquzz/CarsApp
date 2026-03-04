@@ -1,6 +1,7 @@
 ﻿using CarsApp.application.Interfaces;
 using CarsApp.Domain.Entities;
 using CarsApp.Domain.Services;
+using CarsApp.Domain.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace CarsApp.application.Services
         public void ExecuteService(Vehicle vehicle, IServiceOperation service)
         {
             service.Perform(vehicle);
+
         }
     }
 }

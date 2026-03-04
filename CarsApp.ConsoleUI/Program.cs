@@ -7,6 +7,7 @@ using CarsApp.Infrastructure.Factories.AbstractFactory;
 using CarsApp.Infrastructure.Factories.FactoryMethod;
 using CarsApp.Infrastructure.Prototype;
 using CarsApp.Infrastructure.Services;
+using CarsApp.Infrastructure.Singleton;
 using System.Diagnostics;
 
 namespace CarsApp.ConsoleUI
@@ -183,10 +184,7 @@ namespace CarsApp.ConsoleUI
                 {
                     case "1": DemoBuilder(); break;
                     case "2": DemoPrototype(); break;
-                    case "3":
-                        Console.WriteLine("  Singleton — nu este inca implementat.");
-                        Pause();
-                        break;
+                    case "3": DemoSingleton(); break;
                     case "0": back = true; break;
                     default:
                         Console.WriteLine("Optiune invalida.");
@@ -294,6 +292,56 @@ namespace CarsApp.ConsoleUI
             var myTruck = registry.GetClone("heavy-truck");
             Console.WriteLine($"    Din registry: {myCar.GetVehicleType()} — {myCar.Make} {myCar.Model}");
             Console.WriteLine($"    Din registry: {myTruck.GetVehicleType()} — {myTruck.Make} {myTruck.Model}");
+
+            Pause();
+        }
+
+        static void DemoSingleton()
+        {
+            Console.Clear();
+            Console.WriteLine("── Singleton ───────────────────");
+            Console.WriteLine("O singura instanta de ServiceLogger pentru toata aplicatia.");
+            Console.WriteLine();
+
+            // Dovada 1: aceeasi instanta
+            Console.WriteLine("  >> Verificare: foo si bar sunt aceeasi instanta?");
+            var foo = ServiceLogger.Instance;
+            var bar = ServiceLogger.Instance;
+            Console.WriteLine($"    foo.GetHashCode(): {foo.GetHashCode()}");
+            Console.WriteLine($"    bar.GetHashCode(): {bar.GetHashCode()}");
+            Console.WriteLine($"    ReferenceEquals  : {ReferenceEquals(foo, bar)}");
+            Console.WriteLine();
+
+            // Dovada 2: log-urile se acumuleaza intr-o singura instanta
+            Console.WriteLine("  >> Logam prin foo:");
+            foo.Log("Toyota Camry (2020)", "Oil Change", "Ion Popescu", 150m);
+            foo.Log("Toyota Camry (2020)", "Brake Repair", "Ion Popescu", 300m);
+
+            Console.WriteLine("  >> Logam prin bar (aceeasi instanta):");
+            bar.Log("Ford F-150 (2021)", "Engine Repair", "Maria Ionescu", 500m);
+
+            Console.WriteLine();
+            Console.WriteLine("  >> Istoricul complet (bar contine si log-urile lui foo):");
+            bar.PrintHistory();
+
+            // Dovada 3: servicii executate + log manual
+            Console.WriteLine();
+            Console.WriteLine("  >> Executam un serviciu si logam prin Singleton:");
+            var manager = new ServiceManager();
+            var service = new EngineRepairFactory().CreateService();
+            manager.ExecuteService(vehicle, service);
+
+            // logging aici, in ConsoleUI — nu in ServiceManager
+            ServiceLogger.Instance.Log(
+                $"{vehicle.Make} {vehicle.Model} ({vehicle.Year})",
+                service.Name,
+                "Andrei Marin",
+                250m
+            );
+
+            Console.WriteLine();
+            Console.WriteLine("  >> Istoricul final:");
+            ServiceLogger.Instance.PrintHistory();
 
             Pause();
         }

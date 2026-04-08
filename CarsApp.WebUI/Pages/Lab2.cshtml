@@ -1,0 +1,109 @@
+@page
+@model Lab2Model
+@{
+    ViewData["Title"] = "Lab 2";
+}
+
+<div class="page-header">
+    <h1>Lab 2 <span class="badge">Factory Patterns</span></h1>
+    <p>Factory Method și Abstract Factory pentru crearea serviciilor auto.</p>
+</div>
+
+<div class="card">
+    <h2>🔧 Factory Method</h2>
+    <p>Creează un serviciu prin fabrica concretă, fără a instanția direct clasa serviciului.</p>
+    <form method="post" asp-page-handler="FactoryMethod">
+        <select name="factoryType" class="btn btn-secondary">
+            <option value="engine">Engine Repair Factory</option>
+            <option value="brake">Brake Repair Factory</option>
+            <option value="oil">Oil Change Factory</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Run</button>
+    </form>
+
+    @if (Model.FactoryResult != null)
+    {
+        var r = Model.FactoryResult;
+        <div style="margin-top:1.5rem;">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Factory</span>
+                    <span class="metric-value" style="font-size:0.95rem;">@r.FactoryName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Serviciu creat</span>
+                    <span class="metric-value" style="font-size:0.95rem;">@r.ServiceName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value" style="color:#4ade80;">✓ Succes</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="info-header">
+                    <div class="avatar">@r.VehicleMake.Substring(0, 1)@r.VehicleModel.Substring(0, 1)</div>
+                    <div>
+                        <div class="info-title">@r.VehicleMake @r.VehicleModel</div>
+                        <div class="info-sub">@r.VehicleYear · Vehicul de test</div>
+                    </div>
+                    <span class="tag tag-purple" style="margin-left:auto;">Factory Method</span>
+                </div>
+                <div class="info-body">
+                    <div class="field">
+                        <span class="field-label">Serviciu executat</span>
+                        <span class="field-value">@r.ServiceName</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-label">Pattern aplicat</span>
+                        <span class="field-value">Factory Method</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>🏭 Abstract Factory</h2>
+    <p>Comutare între familia Electric și Combustion fără a schimba codul clientului.</p>
+    <form method="post" asp-page-handler="AbstractFactory">
+        <button type="submit" name="familyType" value="electric" class="btn btn-primary">Electric Factory</button>
+        <button type="submit" name="familyType" value="combustion" class="btn btn-secondary">Combustion Factory</button>
+    </form>
+
+    @if (Model.AbstractResult != null)
+    {
+        var r = Model.AbstractResult;
+        <div style="margin-top:1.5rem;">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Familie</span>
+                    <span class="metric-value" style="font-size:0.95rem;">@r.Family</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Factory</span>
+                    <span class="metric-value" style="font-size:0.85rem;">@r.FactoryName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value" style="color:#4ade80;">✓ Succes</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Servicii create de fabrică</div>
+                <div class="service-row">
+                    <span class="dot" style="background:@(r.Family == "Electric" ? "#60a5fa" : "#fb923c");"></span>
+                    <span class="service-name">@r.EngineService</span>
+                    <span class="tag @(r.Family == "Electric" ? "tag-blue" : "tag-orange")" style="margin-left:auto;">Engine</span>
+                </div>
+                <div class="service-row" style="margin-top:6px;">
+                    <span class="dot" style="background:@(r.Family == "Electric" ? "#60a5fa" : "#fb923c");"></span>
+                    <span class="service-name">@r.BrakeService</span>
+                    <span class="tag @(r.Family == "Electric" ? "tag-blue" : "tag-orange")" style="margin-left:auto;">Brake</span>
+                </div>
+            </div>
+        </div>
+    }
+</div>

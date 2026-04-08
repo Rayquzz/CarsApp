@@ -1,0 +1,108 @@
+@page
+@model Lab1Model
+@{
+    ViewData["Title"] = "Lab 1";
+}
+
+<div class="page-header">
+    <h1>Lab 1 <span class="badge">OOP &amp; SOLID</span></h1>
+    <p>Ierarhia de vehicule și principiile SOLID aplicate în arhitectura proiectului.</p>
+</div>
+
+<div class="card">
+    <h2>🚗 Vehicule disponibile</h2>
+    <p>Clasa abstractă <strong>Vehicle</strong> extinsă de Car, Truck și Motorcycle.</p>
+    <form method="post" asp-page-handler="ShowVehicles">
+        <button type="submit" class="btn btn-primary">Afișează vehicule</button>
+    </form>
+
+    @if (Model.Vehicles.Count > 0)
+    {
+        <div style="margin-top:1.5rem;">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Total vehicule</span>
+                    <span class="metric-value">@Model.Vehicles.Count</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Tipuri distincte</span>
+                    <span class="metric-value">@Model.Vehicles.Select(v => v.Type).Distinct().Count()</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Pattern aplicat</span>
+                    <span class="metric-value" style="font-size:0.85rem;">Inheritance</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Ierarhie vehicule</div>
+                @foreach (var v in Model.Vehicles)
+                {
+                    <div class="vehicle-row">
+                        <div class="vehicle-icon">@v.Type.Substring(0, 1)</div>
+                        <div>
+                            <div class="vehicle-name">@v.Make @v.Model</div>
+                            <div class="vehicle-sub">@v.Year · @v.Type</div>
+                        </div>
+                        <span class="tag @v.TagClass" style="margin-left:auto;">@v.Type</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>📐 Principiile SOLID</h2>
+    <p>Cum sunt aplicate cele 5 principii în arhitectura proiectului.</p>
+    <div class="solid-grid">
+        <div class="solid-item">
+            <div class="letter">S</div>
+            <div class="name">SRP</div>
+            <div class="desc">Fiecare clasă are o singură responsabilitate</div>
+        </div>
+        <div class="solid-item">
+            <div class="letter">O</div>
+            <div class="name">OCP</div>
+            <div class="desc">Vehicle extensibil fără modificări</div>
+        </div>
+        <div class="solid-item">
+            <div class="letter">L</div>
+            <div class="name">LSP</div>
+            <div class="desc">Car/Truck/Motorcycle înlocuiesc Vehicle</div>
+        </div>
+        <div class="solid-item">
+            <div class="letter">I</div>
+            <div class="name">ISP</div>
+            <div class="desc">IServiceOperation are doar metodele necesare</div>
+        </div>
+        <div class="solid-item">
+            <div class="letter">D</div>
+            <div class="name">DIP</div>
+            <div class="desc">ServiceManager depinde de interfață, nu implementare</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🏛️ Arhitectura proiectului</h2>
+    <p>Structura pe straturi — Clean Architecture aplicată în CarsApp.</p>
+    <div style="margin-top:0.5rem;">
+        <div class="arch-layer" style="border-left: 3px solid #7c6af7;">
+            <div class="arch-name">Domain</div>
+            <div class="arch-desc">Entities, Interfaces, Builder, Prototype, Singleton interfaces</div>
+        </div>
+        <div class="arch-layer" style="border-left: 3px solid #60a5fa;">
+            <div class="arch-name">Application</div>
+            <div class="arch-desc">IServiceManager, IServicePackageFactory — orchestrare use-case-uri</div>
+        </div>
+        <div class="arch-layer" style="border-left: 3px solid #4ade80;">
+            <div class="arch-name">Infrastructure</div>
+            <div class="arch-desc">Factories, Services, Builder Director, Prototype Registry, Singleton</div>
+        </div>
+        <div class="arch-layer" style="border-left: 3px solid #fb923c;">
+            <div class="arch-name">WebUI / ConsoleUI</div>
+            <div class="arch-desc">Prezentare — depinde doar de Application, nu de Infrastructure direct</div>
+        </div>
+    </div>
+</div>

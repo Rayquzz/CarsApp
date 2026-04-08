@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CarsApp — Design Patterns</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: #1a1d2e;
+            border-bottom: 1px solid #2d3148;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-brand { font-size: 1.25rem; font-weight: 700; color: #7c6af7; text-decoration: none; }
+        .nav-links a { color: #94a3b8; text-decoration: none; margin-left: 2rem; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #e2e8f0; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+        .card { background: #1a1d2e; border: 1px solid #2d3148; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; }
+        .card h2 { font-size: 1.1rem; font-weight: 600; color: #c4b5fd; margin-bottom: 0.5rem; }
+        .card p { color: #64748b; font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.6; }
+        .btn { display: inline-block; padding: 0.6rem 1.4rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; margin-top: 0.25rem; }
+        .btn-primary { background: #7c6af7; color: white; }
+        .btn-primary:hover { background: #6d5ce6; transform: translateY(-1px); }
+        .btn-secondary { background: #1e2235; color: #94a3b8; border: 1px solid #2d3148; margin-left: 0.5rem; }
+        .btn-secondary:hover { color: #e2e8f0; background: #252840; }
+        .output-box { background: #0d0f1a; border: 1px solid #2d3148; border-radius: 8px; padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace; font-size: 0.82rem; color: #a3e635; line-height: 1.8; margin-top: 1rem; white-space: pre-wrap; min-height: 60px; }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.75rem; font-weight: 700; color: #e2e8f0; }
+        .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: #1e2235; color: #7c6af7; border: 1px solid #2d3148; margin-left: 0.75rem; vertical-align: middle; }
+        .page-header p { color: #64748b; margin-top: 0.5rem; font-size: 0.9rem; }
+        select.btn { appearance: none; padding-right: 2rem; cursor: pointer; }
+        .solid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+        .solid-item { background: #0d0f1a; border: 1px solid #2d3148; border-radius: 8px; padding: 0.9rem 1rem; }
+        .solid-item .letter { font-size: 1.5rem; font-weight: 700; color: #7c6af7; }
+        .solid-item .name { font-size: 0.8rem; font-weight: 600; color: #c4b5fd; margin: 0.2rem 0; }
+        .solid-item .desc { font-size: 0.75rem; color: #64748b; line-height: 1.4; }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .metric-card {
+            background: #1e2235;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .info-card {
+            background: #1a1d2e;
+            border: 1px solid #2d3148;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1e3a5f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #60a5fa;
+            flex-shrink: 0;
+        }
+
+        .info-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .info-sub {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .info-body {
+            border-top: 1px solid #2d3148;
+            padding-top: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .field-value {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .tag {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .tag-green {
+            background: #14532d;
+            color: #4ade80;
+        }
+
+        .tag-purple {
+            background: #2e1065;
+            color: #c4b5fd;
+        }
+
+        .services-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .service-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #0d0f1a;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            flex-shrink: 0;
+        }
+
+        .service-name {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .service-tag {
+            margin-left: auto;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #0d0f1a;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .vehicle-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2e1065;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #c4b5fd;
+            flex-shrink: 0;
+        }
+
+        .vehicle-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .vehicle-sub {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .tag-blue {
+            background: #1e3a5f;
+            color: #60a5fa;
+        }
+
+        .tag-orange {
+            background: #431407;
+            color: #fb923c;
+        }
+
+        .arch-layer {
+            background: #0d0f1a;
+            border-radius: 8px;
+            padding: 0.9rem 1rem 0.9rem 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .arch-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 3px;
+        }
+
+        .arch-desc {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">⚙️ CarsApp</a>
+        <div class="nav-links">
+            <a href="/Lab1">Lab 1</a>
+            <a href="/Lab2">Lab 2</a>
+            <a href="/Lab3">Lab 3</a>
+            <a href="/Pachete">Pachete</a>
+            <a href="/Programare">Programare</a>
+            <a href="/Plata">Plată</a>
+        </div>
+    </nav>
+    <main class="container">
+        @RenderBody()
+    </main>
+</body>
+</html>

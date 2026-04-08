@@ -1,0 +1,116 @@
+﻿@page
+@model ProgramareModel
+@{
+    ViewData["Title"] = "Programare";
+}
+
+<div class="page-header">
+    <h1>Programare Service <span class="badge">Façade</span></h1>
+    <p>Completează formularul și noi ne ocupăm de tot.</p>
+</div>
+
+<div class="card">
+    <h2>📋 Detalii programare</h2>
+    <p>Introdu datele mașinii și ale tale pentru a confirma programarea.</p>
+
+    <form method="post" asp-page-handler="Confirma">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+            <div>
+                <label class="field-label" style="display:block; margin-bottom:6px;">Numele tău</label>
+                <input type="text" name="customerName" placeholder="Ex: Ion Popescu"
+                       required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+            </div>
+            <div>
+                <label class="field-label" style="display:block; margin-bottom:6px;">Marca mașinii</label>
+                <input type="text" name="vehicleMake" placeholder="Ex: Toyota"
+                       required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+            </div>
+            <div>
+                <label class="field-label" style="display:block; margin-bottom:6px;">Modelul mașinii</label>
+                <input type="text" name="vehicleModel" placeholder="Ex: Camry"
+                       required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+            </div>
+            <div>
+                <label class="field-label" style="display:block; margin-bottom:6px;">Anul fabricației</label>
+                <input type="number" name="vehicleYear" placeholder="Ex: 2020" min="1990" max="2026"
+                       required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+            </div>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+            <label class="field-label" style="display:block; margin-bottom:6px;">Pachet ales</label>
+            <select name="packageName" style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;">
+                @foreach (var p in Model.AvailablePackages)
+                {
+                    if (p.Name == Model.SelectedPackage)
+                    {
+                        <option value="@p.Name" selected>@p.Name — @p.Price.ToString("C")</option>
+                    }
+                    else
+                    {
+                        <option value="@p.Name">@p.Name — @p.Price.ToString("C")</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:0.8rem;">
+            Confirmă programarea
+        </button>
+    </form>
+</div>
+
+@if (Model.Result != null)
+{
+    var r = Model.Result;
+    <div class="card" style="border-color:#4ade80;">
+        <div class="info-header">
+            <div class="avatar" style="background:#14532d; color:#4ade80;">✓</div>
+            <div>
+                <div class="info-title">Programare confirmată!</div>
+                <div class="info-sub">@r.NotificationMessage</div>
+            </div>
+        </div>
+
+        <div class="metric-row" style="margin-top:1rem;">
+            <div class="metric-card">
+                <span class="metric-label">Order ID</span>
+                <span class="metric-value">@r.OrderId</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Data programată</span>
+                <span class="metric-value">@r.ScheduledDate</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Tehnician</span>
+                <span class="metric-value" style="font-size:0.9rem;">@r.AssignedTechnician</span>
+            </div>
+        </div>
+
+        <div class="info-card" style="margin-top:1rem;">
+            <div class="info-header" style="margin-bottom:0;">
+                <div class="avatar">@r.VehicleInfo.Substring(0, 1)</div>
+                <div>
+                    <div class="info-title">@r.VehicleInfo</div>
+                    <div class="info-sub">@r.PackageName</div>
+                </div>
+                <span class="tag tag-green" style="margin-left:auto;">Confirmat</span>
+            </div>
+        </div>
+
+        <div class="info-card" style="margin-top:1rem;">
+            <div class="services-label">Istoric vehicul</div>
+            <div class="service-row">
+                <span class="dot"></span>
+                <span class="service-name" style="font-size:0.85rem;">@r.HistoryNote</span>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:1rem;">
+        <a href="/Plata?orderId=@r.OrderId&amount=@Model.ResultPrice"
+           class="btn btn-primary"
+           style="width:100%; display:block; text-align:center; padding:0.8rem;">
+            Continuă la plată →
+        </a>
+    </div>
+}

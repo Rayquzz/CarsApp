@@ -1,0 +1,146 @@
+@page
+@model Lab3Model
+@{
+    ViewData["Title"] = "Lab 3";
+}
+
+<div class="page-header">
+    <h1>Lab 3 <span class="badge">Creational Patterns</span></h1>
+    <p>Builder, Prototype și Singleton — pattern-uri creaționale avansate.</p>
+</div>
+
+<div class="card">
+    <h2>🧱 Builder</h2>
+    <p>Construcție pas cu pas a unei comenzi de service complexe.</p>
+    <form method="post" asp-page-handler="Builder">
+        <select name="buildType" class="btn btn-secondary">
+            <option value="full">Full Service (Director)</option>
+            <option value="urgent">Urgent Repair (Director)</option>
+            <option value="vip">VIP Service (Director)</option>
+            <option value="manual">Manual (fără Director)</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Build</button>
+    </form>
+
+    @if (Model.Order != null)
+    {
+        var o = Model.Order;
+        <div class="result-grid" style="margin-top:1.5rem;">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Order ID</span>
+                    <span class="metric-value">@o.OrderId</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Cost estimat</span>
+                    <span class="metric-value">@o.EstimatedCost.ToString("C")</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Data programată</span>
+                    <span class="metric-value">@o.ScheduledDate.ToString("dd.MM.yyyy")</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="info-header">
+                    <div class="avatar">@(o.Vehicle?.Make?.Substring(0, 1))@(o.Vehicle?.Model?.Substring(0, 1))</div>
+                    <div>
+                        <div class="info-title">@o.Vehicle?.Make @o.Vehicle?.Model</div>
+                        <div class="info-sub">@o.Vehicle?.Year · @o.Priority Priority</div>
+                    </div>
+                    @if (o.IncludesLoanCar)
+                    {
+                        <span class="tag tag-green" style="margin-left:auto;">Loan Car ✓</span>
+                    }
+                </div>
+                <div class="info-body">
+                    <div class="field">
+                        <span class="field-label">Technician</span>
+                        <span class="field-value">@(o.TechnicianName ?? "Neasignat")</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-label">Priority</span>
+                        <span class="field-value">@o.Priority</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Servicii incluse</div>
+                @foreach (var s in o.Services)
+                {
+                    <div class="service-row">
+                        <span class="dot"></span>
+                        <span class="service-name">@s</span>
+                        <span class="service-tag">✓ included</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>🔁 Prototype</h2>
+    <p>Clonare vehicule fără a cunoaște clasa concretă.</p>
+    <form method="post" asp-page-handler="Prototype">
+        <button type="submit" class="btn btn-primary">Run Demo</button>
+    </form>
+
+    @if (Model.Clones.Count > 0)
+    {
+        <div style="margin-top:1.5rem;">
+            <div class="section-label">Clone directe &amp; polimorfice</div>
+            @foreach (var c in Model.Clones)
+            {
+                <div class="vehicle-row">
+                    <div class="vehicle-icon">@c.Type.Substring(0, 1)</div>
+                    <div>
+                        <div class="vehicle-name">@c.Make @c.Model (@c.Year)</div>
+                        <div class="vehicle-sub">@c.Type · Hash: @c.Hash</div>
+                    </div>
+                    <span class="tag tag-purple" style="margin-left:auto;">@c.Source</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>🔒 Singleton</h2>
+    <p>O singură instanță de ServiceLogger pentru întreaga aplicație.</p>
+    <form method="post" asp-page-handler="Singleton">
+        <button type="submit" class="btn btn-primary">Run Demo</button>
+    </form>
+
+    @if (Model.SingletonVerified)
+    {
+        <div style="margin-top:1.5rem;">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">foo.GetHashCode()</span>
+                    <span class="metric-value" style="font-size:1rem;">@Model.FooHash</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">bar.GetHashCode()</span>
+                    <span class="metric-value" style="font-size:1rem;">@Model.BarHash</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Aceeași instanță</span>
+                    <span class="metric-value" style="color:#4ade80;">@(Model.FooHash == Model.BarHash ? "DA ✓" : "NU")</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Istoric log-uri</div>
+                @foreach (var entry in Model.LogEntries)
+                {
+                    <div class="service-row">
+                        <span class="dot"></span>
+                        <span class="service-name" style="font-size:0.8rem;">@entry</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarsApp.ConsoleUI", "CarsAp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarsApp.Domain", "CarsApp.Domain\CarsApp.Domain.csproj", "{8554A45E-ABF2-4CC6-A751-999ACCD998BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarsApp.Tests", "CarsApp.Tests\CarsApp.Tests.csproj", "{E4F57688-7A89-4CC0-95C6-8248D7FE6A9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarsApp.WebUI", "CarsApp.WebUI\CarsApp.WebUI.csproj", "{D6457348-1104-4F6D-A3A3-C04B86BD2745}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{8554A45E-ABF2-4CC6-A751-999ACCD998BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8554A45E-ABF2-4CC6-A751-999ACCD998BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8554A45E-ABF2-4CC6-A751-999ACCD998BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4F57688-7A89-4CC0-95C6-8248D7FE6A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4F57688-7A89-4CC0-95C6-8248D7FE6A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4F57688-7A89-4CC0-95C6-8248D7FE6A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4F57688-7A89-4CC0-95C6-8248D7FE6A9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6457348-1104-4F6D-A3A3-C04B86BD2745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6457348-1104-4F6D-A3A3-C04B86BD2745}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6457348-1104-4F6D-A3A3-C04B86BD2745}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6457348-1104-4F6D-A3A3-C04B86BD2745}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

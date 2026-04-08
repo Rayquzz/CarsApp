@@ -76,5 +76,12 @@ namespace CarsApp.Infrastructure.Singleton
             foreach (var entry in _history)
                 Console.WriteLine($"    {entry}");
         }
+
+        public void ClearHistory()
+        {
+            _history.Clear();
+        }
+
+        
     }
 }

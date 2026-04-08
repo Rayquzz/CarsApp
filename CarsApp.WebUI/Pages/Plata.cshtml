@@ -1,0 +1,149 @@
+﻿@page
+@model PlataModel
+@{
+    ViewData["Title"] = "Plată";
+}
+
+<div class="page-header">
+    <h1>Plată Online <span class="badge">Adapter</span></h1>
+    <p>Alege metoda de plată preferată. Toate metodele sunt procesate uniform.</p>
+</div>
+
+<div class="card">
+    <h2>💳 Selectează metoda de plată</h2>
+    <p>Introdu datele comenzii și alege cum dorești să plătești.</p>
+
+    <form method="post" asp-page-handler="Plateste">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+            <div>
+                <label class="field-label" style="display:block; margin-bottom:6px;">Numele tău</label>
+                <input type="text" name="customerName" placeholder="Ex: Ion Popescu"
+                       required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+            </div>
+            <div>
+                <label class="field-label" style="display:block; margin-bottom:6px;">Order ID</label>
+                <input type="text" name="orderId" value="@Model.OrderId" placeholder="Ex: ORD-ABC123"
+                       required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+            </div>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+            <label class="field-label" style="display:block; margin-bottom:10px;">Metodă de plată</label>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;">
+                <label class="payment-option">
+                    <input type="radio" name="provider" value="stripe" checked style="display:none;" />
+                    <div class="payment-card" id="card-stripe">
+                        <div class="payment-icon" style="background:#635bff22; color:#635bff;">S</div>
+                        <div class="payment-name">Stripe</div>
+                        <div class="payment-sub">Card de credit/debit</div>
+                    </div>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="provider" value="paypal" style="display:none;" />
+                    <div class="payment-card" id="card-paypal">
+                        <div class="payment-icon" style="background:#003087; color:#009cde;">P</div>
+                        <div class="payment-name">PayPal</div>
+                        <div class="payment-sub">Cont PayPal</div>
+                    </div>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="provider" value="bank" style="display:none;" />
+                    <div class="payment-card" id="card-bank">
+                        <div class="payment-icon" style="background:#14532d; color:#4ade80;">B</div>
+                        <div class="payment-name">Bank Card</div>
+                        <div class="payment-sub">Transfer bancar</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+            <label class="field-label" style="display:block; margin-bottom:6px;">Suma de plată (RON)</label>
+            <input type="number" name="amount" value="@Model.Amount" min="1" step="0.01"
+                   required style="width:100%; padding:0.6rem 1rem; background:#0d0f1a; border:1px solid #2d3148; border-radius:8px; color:#e2e8f0; font-size:0.9rem;" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:0.8rem;">
+            Procesează plata
+        </button>
+    </form>
+</div>
+
+@if (Model.PaymentResult != null)
+{
+    var r = Model.PaymentResult;
+    <div class="card" style="border-color:@(r.Success ? "#4ade80" : "#f87171");">
+        <div class="info-header">
+            <div class="avatar" style="background:@(r.Success ? "#14532d" : "#7f1d1d"); color:@(r.Success ? "#4ade80" : "#f87171");">
+                @(r.Success ? "✓" : "✗")
+            </div>
+            <div>
+                <div class="info-title">@(r.Success ? "Plată procesată cu succes!" : "Plată eșuată")</div>
+                <div class="info-sub">@r.Message</div>
+            </div>
+        </div>
+
+        @if (r.Success)
+        {
+            <div class="metric-row" style="margin-top:1rem;">
+                <div class="metric-card">
+                    <span class="metric-label">Transaction ID</span>
+                    <span class="metric-value" style="font-size:0.85rem;">@r.TransactionId</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Metodă</span>
+                    <span class="metric-value">@Model.ProviderName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value" style="color:#4ade80;">Confirmat</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .payment-card {
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 10px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+        .payment-card:hover {
+            border-color: #7c6af7;
+        }
+
+    .payment-option input:checked + .payment-card {
+        border-color: #7c6af7;
+        background: #1a1535;
+    }
+
+    .payment-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0 auto 0.5rem;
+    }
+
+    .payment-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+
+    .payment-sub {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 2px;
+    }
+</style>

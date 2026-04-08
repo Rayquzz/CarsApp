@@ -314,11 +314,11 @@ namespace CarsApp.ConsoleUI
 
             // Dovada 2: log-urile se acumuleaza intr-o singura instanta
             Console.WriteLine("  >> Logam prin foo:");
-            foo.Log("Toyota Camry (2020)", "Oil Change", "Ion Popescu", 150m);
-            foo.Log("Toyota Camry (2020)", "Brake Repair", "Ion Popescu", 300m);
+            foo.Log("Toyota Camry (2020)", "Oil Change", "Ion Popescu", 150);
+            foo.Log("Toyota Camry (2020)", "Brake Repair", "Ion Popescu", 300);
 
             Console.WriteLine("  >> Logam prin bar (aceeasi instanta):");
-            bar.Log("Ford F-150 (2021)", "Engine Repair", "Maria Ionescu", 500m);
+            bar.Log("Ford F-150 (2021)", "Engine Repair", "Maria Ionescu", 500);
 
             Console.WriteLine();
             Console.WriteLine("  >> Istoricul complet (bar contine si log-urile lui foo):");

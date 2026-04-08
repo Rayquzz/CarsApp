@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CarsApp.application\CarsApp.application.csproj" />
+    <ProjectReference Include="..\CarsApp.Infrastructure\CarsApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\CarsApp.Domain\CarsApp.Domain.csproj" />
+  </ItemGroup>
+</Project>

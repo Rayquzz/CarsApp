@@ -1,0 +1,48 @@
+﻿@page
+@model PacheteModel
+@{
+    ViewData["Title"] = "Pachete";
+}
+
+<div class="page-header">
+    <h1>Pachete de Service <span class="badge">Composite</span></h1>
+    <p>Alege pachetul potrivit pentru mașina ta. Prețurile includ toate serviciile din pachet.</p>
+</div>
+
+@foreach (var package in Model.Packages)
+{
+    <div class="card">
+        <div class="info-header">
+            <div class="avatar" style="background:#2e1065; color:#c4b5fd;">
+                @package.Name.Substring(0, 1)
+            </div>
+            <div>
+                <div class="info-title">@package.Name</div>
+                <div class="info-sub">@package.Description</div>
+            </div>
+            <div style="margin-left:auto; text-align:right;">
+                <div class="metric-value" style="font-size:1.4rem;">@package.Price.ToString("C")</div>
+                <div class="metric-label">cost total</div>
+            </div>
+        </div>
+
+        <div style="border-top:1px solid #2d3148; padding-top:1rem; margin-top:0.5rem;">
+            <div class="services-label">Servicii incluse</div>
+            @foreach (var item in package.FlatItems)
+            {
+                <div class="service-row" style="margin-bottom:6px;">
+                    <span class="dot" style="background:@item.Color;"></span>
+                    <span class="service-name">@item.Name</span>
+                    <span class="service-tag">@item.Price.ToString("C")</span>
+                </div>
+            }
+        </div>
+
+        <div style="margin-top:1rem;">
+            <a href="/Programare?package=@Uri.EscapeDataString(package.Name)"
+               class="btn btn-primary">
+                Alege acest pachet
+            </a>
+        </div>
+    </div>
+}

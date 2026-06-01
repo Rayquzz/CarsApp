@@ -1,0 +1,345 @@
+﻿@page
+@model Lab5Model
+@{
+    ViewData["Title"] = "Lab 5";
+}
+
+<div class="page-header">
+    <h1>Lab 5 <span class="badge">Structural Patterns</span></h1>
+    <p>Flyweight, Decorator, Bridge și Proxy.</p>
+</div>
+
+<div class="card">
+    <h2>🪶 Flyweight</h2>
+    <p>Partajarea pieselor de schimb pentru a reduce consumul de memorie.</p>
+    <form method="post" asp-page-handler="Flyweight">
+        <button type="submit" class="btn btn-primary">Run Demo (2000 intrări)</button>
+    </form>
+
+    @if (Model.FwResult != null)
+    {
+        var r = Model.FwResult;
+        <div style="margin-top:1.5rem;">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Intrări în stoc</span>
+                    <span class="metric-value">@r.TotalEntries</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Obiecte unice (pool)</span>
+                    <span class="metric-value" style="color:#4ade80;">@r.UniqueObjects</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Obiecte economisite</span>
+                    <span class="metric-value" style="color:#facc15;">@r.MemorySaved</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Aceeași referință?</span>
+                    <span class="metric-value" style="color:#4ade80;">
+                        @(r.SameReference ? "DA ✓" : "NU")
+                    </span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Pool de flyweight-uri (obiecte partajate)</div>
+                @foreach (var p in r.PoolContents)
+                {
+                    <div class="service-row">
+                        <span class="dot"></span>
+                        <span class="service-name">[@p.Code] @p.Name — @p.Manufacturer</span>
+                        <span class="tag tag-purple">Hash: @p.Hash</span>
+                    </div>
+                }
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Primele 8 intrări din stoc (stare extrinsecă)</div>
+                @foreach (var e in r.SampleEntries)
+                {
+                    <div class="service-row">
+                        <span class="dot"></span>
+                        <span class="service-name" style="font-size:0.82rem;">@e.Label — @e.Price.ToString("C")</span>
+                        <span class="tag tag-green">FW#@e.FwHash</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+<div class="card">
+    <h2>🎨 Decorator</h2>
+    <p>Extinderea dinamică a serviciilor fără a modifica clasele existente.</p>
+
+    <form method="post" asp-page-handler="Decorator">
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem;">
+            <select name="baseService" class="btn btn-secondary">
+                <option value="oil">Schimb Ulei — 150 RON</option>
+                <option value="brake">Reparație Frâne — 350 RON</option>
+                <option value="engine">Reparație Motor — 800 RON</option>
+                <option value="inspect">Inspecție Generală — 100 RON</option>
+            </select>
+        </div>
+
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:1.2rem;">
+            <label style="display:flex; gap:.5rem; align-items:center; cursor:pointer;">
+                <input type="checkbox" name="withDiscount" value="true" /> 💛 Discount 10%
+            </label>
+            <label style="display:flex; gap:.5rem; align-items:center; cursor:pointer;">
+                <input type="checkbox" name="withWarranty" value="true" /> 🛡️ Garanție 12 luni
+            </label>
+            <label style="display:flex; gap:.5rem; align-items:center; cursor:pointer;">
+                <input type="checkbox" name="withReport" value="true" /> 📄 Raport PDF
+            </label>
+            <label style="display:flex; gap:.5rem; align-items:center; cursor:pointer;">
+                <input type="checkbox" name="withSms" value="true" /> 📱 Notificare SMS
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Aplică Decoratori</button>
+    </form>
+
+    @if (Model.DecResult != null)
+    {
+        var d = Model.DecResult;
+        <div style="margin-top:1.5rem;">
+
+            @* Costul final *@
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Cost final</span>
+                    <span class="metric-value" style="color:#4ade80;">@d.FinalCost.ToString("C")</span>
+                </div>
+                <div class="metric-card" style="flex:2;">
+                    <span class="metric-label">Serviciu compus</span>
+                    <span class="metric-value" style="font-size:0.85rem;">@d.FinalName</span>
+                </div>
+            </div>
+
+            @* Lanțul de decoratori *@
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Lanț de decoratori (ordinea aplicării)</div>
+                @foreach (var (step, i) in d.Steps.Select((s, i) => (s, i)))
+                {
+                    <div class="service-row">
+                        <span class="tag tag-purple" style="min-width:2rem; text-align:center;">@i</span>
+                        <span class="service-name" style="font-size:0.85rem;">@step</span>
+                    </div>
+                }
+            </div>
+
+            @* Output-ul execuției *@
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Rezultatul execuției</div>
+                @foreach (var line in d.Output)
+                {
+                    <div class="service-row">
+                        <span class="service-name" style="font-size:0.85rem; font-family:monospace;">@line</span>
+                    </div>
+                }
+            </div>
+
+        </div>
+    }
+</div>
+<div class="card">
+    <h2>🌉 Bridge</h2>
+    <p>Separarea tipului de raport de platforma de randare — 3×3 combinații cu doar 6 clase.</p>
+
+    <form method="post" asp-page-handler="Bridge">
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+
+            <div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">
+                    Abstracție (tip raport)
+                </div>
+                <select name="reportType" class="btn btn-secondary">
+                    <option value="summary">📋 Raport Sumar</option>
+                    <option value="detailed">📂 Raport Detaliat</option>
+                    <option value="financial">💰 Raport Financiar</option>
+                </select>
+            </div>
+
+            <div style="font-size:1.2rem; padding-top:1.2rem; color:var(--text-muted);">⟷</div>
+
+            <div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">
+                    Implementor (platformă)
+                </div>
+                <select name="rendererType" class="btn btn-secondary">
+                    <option value="console">🖥️ Consolă (Text)</option>
+                    <option value="html">🌐 HTML (Email/Web)</option>
+                    <option value="plain">📄 Plain Text (.txt)</option>
+                </select>
+            </div>
+
+            <div style="padding-top:1.2rem;">
+                <button type="submit" class="btn btn-primary">Generează Raport</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.BrResult != null)
+    {
+        var b = Model.BrResult;
+        <div style="margin-top:1.5rem;">
+
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Tip raport</span>
+                    <span class="metric-value" style="font-size:1rem;">@b.ReportType</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Renderer</span>
+                    <span class="metric-value" style="font-size:1rem;">@b.RendererName</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Output generat</div>
+                <div style="margin-top:.75rem; padding:.75rem;
+                                background:var(--bg-main, #0f172a);
+                                border-radius:6px; font-size:0.82rem;">
+                    @if (b.IsHtml)
+                    {
+                        // Randăm HTML-ul direct în pagină
+                        @Html.Raw(b.Output)
+                    }
+                    else
+                    {
+                        // Text — păstrăm newline-urile
+                        <pre style="margin:0; white-space:pre-wrap;
+                                            font-family:monospace; color:var(--text-main, #e2e8f0);">@b.Output</pre>
+                    }
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+<div class="card">
+    <h2>🛡️ Proxy</h2>
+    <p>Lanț de 3 proxy-uri: <strong>Auth → Logging → Cache → Serviciu Real</strong>.</p>
+
+    <form method="post" asp-page-handler="Proxy">
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end;">
+
+            <div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">
+                    Vehicul (marca)
+                </div>
+                <select name="vehicleMake" class="btn btn-secondary">
+                    <option value="Toyota">Toyota</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Ford">Ford</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Dacia">Dacia (fără istoric)</option>
+                </select>
+            </div>
+
+            <div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">
+                    Rol utilizator
+                </div>
+                <select name="userRole" class="btn btn-secondary">
+                    <option value="Admin">👑 Admin</option>
+                    <option value="Mecanic">🔧 Mecanic</option>
+                    <option value="Client">👤 Client (acces limitat)</option>
+                    <option value="Anonim">🚫 Anonim (blocat)</option>
+                </select>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:.5rem; padding-bottom:2px;">
+                <input type="checkbox" name="invalidateCache" value="true" id="inv" />
+                <label for="inv" style="font-size:0.85rem; cursor:pointer;">
+                    Resetează cache
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Accesează Istoricul</button>
+        </div>
+    </form>
+
+    @if (Model.PxResult != null)
+    {
+        var p = Model.PxResult;
+        <div style="margin-top:1.5rem;">
+
+            @* Status general *@
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Acces</span>
+                    <span class="metric-value" style="color:@(p.Success ? "#4ade80" : "#f87171")">
+                        @(p.Success ? "PERMIS ✓" : "BLOCAT ✗")
+                    </span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Cache</span>
+                    <span class="metric-value"
+                          style="color:@(p.CacheStatus == "HIT" ? "#4ade80" : p.CacheStatus == "MISS" ? "#facc15" : "#94a3b8")">
+                        @p.CacheStatus
+                        @(p.FromCache ? " ⚡" : "")
+                    </span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Hits / Misses</span>
+                    <span class="metric-value">@p.CacheHits / @p.CacheMisses</span>
+                </div>
+            </div>
+
+            @if (!p.Success)
+            {
+                <div class="info-card" style="margin-top:1rem; border-left:3px solid #f87171;">
+                    <div class="services-label" style="color:#f87171;">Acces refuzat</div>
+                    <div style="margin-top:.5rem; font-size:0.85rem;">@p.DeniedReason</div>
+                </div>
+            }
+            else
+            {
+                <div class="info-card" style="margin-top:1rem;">
+                    <div class="services-label">Date istorice vehicul</div>
+                    <div style="margin-top:.5rem; font-size:0.9rem;">@p.Data</div>
+                </div>
+            }
+
+            @* Lanțul de acces *@
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Lanțul de proxy-uri (traseu complet)</div>
+                @foreach (var segment in p.AccessLog.Split('|'))
+                {
+                    var s = segment.Trim();
+                    if (string.IsNullOrEmpty(s)) continue;
+                    var color = s.StartsWith("[AUTH]") ? "#818cf8" :
+                    s.StartsWith("[LOG]") ? "#facc15" :
+                    s.StartsWith("[CACHE]") ? "#34d399" : "#94a3b8";
+                    <div class="service-row">
+                        <span class="dot" style="background:@color"></span>
+                        <span class="service-name"
+                              style="font-size:0.8rem; font-family:monospace; color:@color">
+                            @s
+                        </span>
+                    </div>
+                }
+            </div>
+
+            @* Audit trail *@
+            @if (p.AuditTrail.Count > 0)
+            {
+                <div class="info-card" style="margin-top:1rem;">
+                    <div class="services-label">Audit Trail (Logging Proxy)</div>
+                    @foreach (var entry in p.AuditTrail)
+                    {
+                        <div class="service-row">
+                            <span class="dot"></span>
+                            <span class="service-name"
+                                  style="font-size:0.78rem; font-family:monospace;">
+                                @entry
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
+    }
+</div>

@@ -14,6 +14,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
             padding: 1rem 2rem;
             background: #1a1d2e;
             border-bottom: 1px solid #2d3148;
@@ -22,7 +24,8 @@
             z-index: 100;
         }
         .nav-brand { font-size: 1.25rem; font-weight: 700; color: #7c6af7; text-decoration: none; }
-        .nav-links a { color: #94a3b8; text-decoration: none; margin-left: 2rem; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links { display: flex; align-items: center; justify-content: flex-end; gap: 2rem; flex-wrap: wrap; row-gap: 0.75rem; }
+        .nav-links a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
         .nav-links a:hover { color: #e2e8f0; }
         .container { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; }
         .card { background: #1a1d2e; border: 1px solid #2d3148; border-radius: 12px; padding: 1.75rem; margin-bottom: 1.25rem; }
@@ -267,9 +270,10 @@
             <a href="/Lab1">Lab 1</a>
             <a href="/Lab2">Lab 2</a>
             <a href="/Lab3">Lab 3</a>
-            <a href="/Pachete">Pachete</a>
-            <a href="/Programare">Programare</a>
-            <a href="/Plata">Plată</a>
+            <a href="/Lab4">Lab 4</a>
+            <a asp-page="/Lab5">Lab 5</a>
+            <a class="nav-link" asp-page="/Lab6">Lab 6</a>
+            <a class="nav-link" asp-page="/Lab7">Lab 7</a>
         </div>
     </nav>
     <main class="container">

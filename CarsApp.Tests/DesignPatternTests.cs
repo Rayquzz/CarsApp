@@ -8,7 +8,15 @@ using CarsApp.Infrastructure.Lab4.Composite;
 using CarsApp.Infrastructure.Lab4.Facade;
 using CarsApp.Infrastructure.Singleton;
 using CarsApp.Domain.Lab4.Facade;
-using CarsApp.Domain.Lab4.Composite;
+using CarsApp.Domain.Lab6.Command;
+using CarsApp.Domain.Lab6.Iterator;
+using CarsApp.Domain.Lab6.Memento;
+using CarsApp.Domain.Lab6.Observer;
+using CarsApp.Domain.Lab6.Strategy;
+using CarsApp.Infrastructure.Lab6.Command;
+using CarsApp.Infrastructure.Lab6.Iterator;
+using CarsApp.Infrastructure.Lab6.Observer;
+using CarsApp.Infrastructure.Lab6.Strategy;
 using Xunit;
 
 namespace CarsApp.Tests
@@ -339,6 +347,270 @@ namespace CarsApp.Tests
             Assert.NotEmpty(result.ScheduledDate);
             Assert.NotEmpty(result.HistoryNote);
             Assert.NotEmpty(result.NotificationMessage);
+        }
+
+        // ============================================================
+        // LAB 6 - Behavioral Patterns
+        // ============================================================
+
+        // -- Strategy -------------------------------------------------
+
+        [Fact]
+        public void Strategy_Standard_AddsLoanCarCost()
+        {
+            var order = CreateLab6Order(
+                new[] { "Oil Change", "Brake Repair" },
+                includesLoanCar: true);
+
+            var calculator = new ServiceCostCalculator(new StandardCostStrategy());
+            var estimate = calculator.Calculate(order);
+
+            Assert.Equal("Standard", estimate.StrategyName);
+            Assert.Equal(600m, estimate.BaseCost);
+            Assert.Equal(100m, estimate.Adjustments);
+            Assert.Equal(700m, estimate.TotalCost);
+            Assert.Equal(700m, order.EstimatedCost);
+            Assert.Contains(estimate.AppliedRules, rule => rule.Contains("masina de schimb"));
+        }
+
+        [Fact]
+        public void Strategy_ExpressAndLoyalty_ApplyDifferentAdjustments()
+        {
+            var expressOrder = CreateLab6Order(new[] { "Oil Change", "Brake Repair" });
+            var loyaltyOrder = CreateLab6Order(new[] { "Oil Change", "Brake Repair" });
+
+            var express = new ServiceCostCalculator(new ExpressCostStrategy()).Calculate(expressOrder);
+            var loyalty = new ServiceCostCalculator(new LoyaltyCostStrategy()).Calculate(loyaltyOrder);
+
+            Assert.Equal(150m, express.Adjustments);
+            Assert.Equal(750m, express.TotalCost);
+            Assert.Equal(-90m, loyalty.Adjustments);
+            Assert.Equal(510m, loyalty.TotalCost);
+            Assert.True(express.TotalCost > loyalty.TotalCost);
+        }
+
+        // -- Iterator -------------------------------------------------
+
+        [Fact]
+        public void Iterator_DepthFirst_ReturnsComponentsInTreeOrder()
+        {
+            var root = CreateIteratorPackage();
+            var iterator = new IterableServicePackage(root)
+                .CreateIterator(ServiceComponentTraversalMode.DepthFirst);
+
+            var items = Drain(iterator);
+
+            Assert.Equal(
+                new[] { "Root Package", "Basic Package", "Oil Change", "Tire Check", "Brake Repair" },
+                items.Select(item => item.Component.Name).ToArray());
+            Assert.Equal(new[] { 0, 1, 2, 2, 1 }, items.Select(item => item.Depth).ToArray());
+        }
+
+        [Fact]
+        public void Iterator_LeafOnly_ReturnsOnlySingleServices()
+        {
+            var root = CreateIteratorPackage();
+            var iterator = new IterableServicePackage(root)
+                .CreateIterator(ServiceComponentTraversalMode.LeafOnly);
+
+            var items = Drain(iterator);
+
+            Assert.All(items, item => Assert.False(item.Component.IsComposite));
+            Assert.Equal(
+                new[] { "Oil Change", "Tire Check", "Brake Repair" },
+                items.Select(item => item.Component.Name).ToArray());
+        }
+
+        [Fact]
+        public void Iterator_CompositeOnly_ReturnsOnlyPackages()
+        {
+            var root = CreateIteratorPackage();
+            var iterator = new IterableServicePackage(root)
+                .CreateIterator(ServiceComponentTraversalMode.CompositeOnly);
+
+            var items = Drain(iterator);
+
+            Assert.All(items, item => Assert.True(item.Component.IsComposite));
+            Assert.Equal(
+                new[] { "Root Package", "Basic Package" },
+                items.Select(item => item.Component.Name).ToArray());
+        }
+
+        // -- Observer -------------------------------------------------
+
+        [Fact]
+        public void Observer_StatusChange_NotifiesDashboardCustomerAndTechnician()
+        {
+            var order = CreateLab6Order(new[] { "Oil Change" });
+            var subject = new ServiceOrderStatusSubject(order);
+            var dashboard = new ReceptionDashboardObserver();
+            var customer = new CustomerNotificationObserver();
+            var technician = new TechnicianNotificationObserver();
+
+            subject.Attach(dashboard);
+            subject.Attach(customer);
+            subject.Attach(technician);
+
+            subject.ChangeStatus(ServiceOrderStatus.Scheduled, "Programare confirmata.");
+
+            Assert.Single(dashboard.StatusHistory);
+            Assert.Contains("Created -> Scheduled", dashboard.StatusHistory[0]);
+            Assert.Single(customer.Notifications);
+            Assert.Contains("Toyota Camry", customer.Notifications[0]);
+            Assert.Single(technician.Tasks);
+            Assert.Contains(order.TechnicianName, technician.Tasks[0]);
+        }
+
+        [Fact]
+        public void Observer_CompletedStatus_DoesNotCreateTechnicianTask()
+        {
+            var order = CreateLab6Order(new[] { "Oil Change" });
+            var subject = new ServiceOrderStatusSubject(order);
+            var technician = new TechnicianNotificationObserver();
+
+            subject.Attach(technician);
+            subject.ChangeStatus(ServiceOrderStatus.Completed, "Comanda finalizata.");
+
+            Assert.Empty(technician.Tasks);
+        }
+
+        // -- Command --------------------------------------------------
+
+        [Fact]
+        public void Command_Invoker_ExecutesUndoAndRedo()
+        {
+            var order = CreateLab6Order(new[] { "Oil Change" });
+            var receiver = new ServiceOrderCommandReceiver();
+            var invoker = new ServiceCommandInvoker();
+
+            invoker.ExecuteCommand(new AddServiceCommand(receiver, order, "Diagnostics"));
+            invoker.ExecuteCommand(new ChangePriorityCommand(receiver, order, "High"));
+
+            Assert.Contains("Diagnostics", order.Services);
+            Assert.Equal("High", order.Priority);
+            Assert.Equal(2, invoker.UndoCount);
+
+            Assert.True(invoker.Undo());
+            Assert.Equal("Standard", order.Priority);
+            Assert.Contains("Diagnostics", order.Services);
+
+            Assert.True(invoker.Undo());
+            Assert.DoesNotContain("Diagnostics", order.Services);
+
+            Assert.True(invoker.Redo());
+            Assert.Contains("Diagnostics", order.Services);
+            Assert.Equal(1, invoker.RedoCount);
+        }
+
+        [Fact]
+        public void Command_ScheduledCommands_ExecuteInOrder()
+        {
+            var order = CreateLab6Order(new[] { "Oil Change" });
+            var receiver = new ServiceOrderCommandReceiver();
+            var invoker = new ServiceCommandInvoker();
+
+            invoker.ScheduleCommand(new AddServiceCommand(receiver, order, "Brake Repair"));
+            invoker.ScheduleCommand(new AssignTechnicianCommand(receiver, order, "Ioana Stan"));
+
+            Assert.Equal(2, invoker.PendingCommandsCount);
+
+            invoker.ExecuteScheduledCommands();
+
+            Assert.Equal(0, invoker.PendingCommandsCount);
+            Assert.Contains("Brake Repair", order.Services);
+            Assert.Equal("Ioana Stan", order.TechnicianName);
+            Assert.Equal(2, invoker.UndoCount);
+        }
+
+        // -- Memento --------------------------------------------------
+
+        [Fact]
+        public void Memento_UndoRestoresSavedState()
+        {
+            var order = CreateLab6Order(new[] { "Oil Change" });
+            var originator = new ServiceOrderOriginator(order);
+            var history = new ServiceOrderHistory(originator);
+
+            history.Backup("Initial state");
+
+            order.Priority = "High";
+            order.Services.Add("Engine Repair");
+            order.IncludesLoanCar = true;
+
+            Assert.True(history.Undo());
+
+            Assert.Equal("Standard", order.Priority);
+            Assert.Equal(new[] { "Oil Change" }, order.Services);
+            Assert.False(order.IncludesLoanCar);
+            Assert.Equal(0, history.UndoCount);
+            Assert.Equal(1, history.RedoCount);
+        }
+
+        [Fact]
+        public void Memento_RedoRestoresStateBeforeUndo()
+        {
+            var order = CreateLab6Order(new[] { "Oil Change" });
+            var originator = new ServiceOrderOriginator(order);
+            var history = new ServiceOrderHistory(originator);
+
+            history.Backup("Initial state");
+            order.Priority = "High";
+            order.Services.Add("Engine Repair");
+
+            history.Undo();
+
+            Assert.True(history.Redo());
+
+            Assert.Equal("High", order.Priority);
+            Assert.Contains("Engine Repair", order.Services);
+            Assert.Equal(1, history.UndoCount);
+            Assert.Equal(0, history.RedoCount);
+        }
+
+        private static ServiceOrder CreateLab6Order(
+            IEnumerable<string> services,
+            string priority = "Standard",
+            bool includesLoanCar = false)
+        {
+            var builder = new ServiceOrderBuilder();
+
+            builder
+                .ForVehicle(new Car("Toyota", "Camry", 2020))
+                .WithPriority(priority)
+                .WithTechnician("Maria Ionescu")
+                .ScheduledOn(DateTime.Today.AddDays(2))
+                .WithLoanCar(includesLoanCar)
+                .WithNotes("Test order");
+
+            foreach (var service in services)
+            {
+                builder.AddService(service);
+            }
+
+            return builder.GetProduct();
+        }
+
+        private static IServiceComponent CreateIteratorPackage()
+        {
+            var basicPackage = new ServicePackage("Basic Package", "Basic")
+                .Add(new SingleService("Oil Change", "Oil", 150m))
+                .Add(new SingleService("Tire Check", "Tires", 80m));
+
+            return new ServicePackage("Root Package", "Root")
+                .Add(basicPackage)
+                .Add(new SingleService("Brake Repair", "Brakes", 250m));
+        }
+
+        private static List<ServiceComponentIteratorItem> Drain(IServiceComponentIterator iterator)
+        {
+            var items = new List<ServiceComponentIteratorItem>();
+
+            while (iterator.MoveNext())
+            {
+                items.Add(iterator.Current);
+            }
+
+            return items;
         }
     }
 }

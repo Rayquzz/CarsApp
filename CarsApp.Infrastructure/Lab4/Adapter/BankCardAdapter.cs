@@ -16,7 +16,7 @@ namespace CarsApp.Infrastructure.Lab4.Adapter
         public PaymentResult ProcessPayment(string customerName, decimal amount)
         {
             // Banca vrea float si currency string — adaptam
-            var code = _bank.InitiateTransfer(customerName, (float)amount, "RON");
+            var code = _bank.InitiateTransfer(customerName, (float)amount, "MDL");
             var status = _bank.GetTransferStatus(code);
             var success = status == "COMPLETED";
             return new PaymentResult(success, $"BANK-{code}", $"Bank transfer {status} for {customerName}");

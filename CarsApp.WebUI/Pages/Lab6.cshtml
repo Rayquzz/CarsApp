@@ -1,0 +1,610 @@
+@page
+@model CarsApp.WebUI.Pages.Lab6Model
+@{
+    ViewData["Title"] = "Lab 6";
+}
+
+<style>
+    .lab6-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 0.9rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .lab6-panel {
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .lab6-panel strong {
+        color: #e2e8f0;
+        display: block;
+        font-size: 0.95rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .lab6-panel span {
+        color: #64748b;
+        font-size: 0.78rem;
+        line-height: 1.5;
+    }
+
+    .lab6-form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        align-items: flex-end;
+        margin-top: 1rem;
+    }
+
+    .lab6-field {
+        min-width: 180px;
+    }
+
+    .lab6-field label,
+    .lab6-group-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+
+    .lab6-select {
+        width: 100%;
+        margin: 0;
+        color: #e2e8f0;
+    }
+
+    .lab6-check-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 0.65rem;
+        margin-top: 0.5rem;
+    }
+
+    .lab6-check {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+        padding: 0.75rem;
+        cursor: pointer;
+    }
+
+    .lab6-check input {
+        accent-color: #7c6af7;
+    }
+
+    .lab6-check-name {
+        display: block;
+        color: #e2e8f0;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .lab6-check-price {
+        display: block;
+        color: #64748b;
+        font-size: 0.75rem;
+        margin-top: 0.15rem;
+    }
+
+    .lab6-result {
+        margin-top: 1.3rem;
+    }
+
+    .lab6-list {
+        display: grid;
+        gap: 0.55rem;
+        margin-top: 0.75rem;
+    }
+
+    .lab6-line {
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+        color: #dbeafe;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .iterator-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.75rem;
+        align-items: center;
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .iterator-main {
+        padding-left: calc(var(--depth) * 1rem);
+        min-width: 0;
+    }
+
+    .iterator-title {
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .iterator-path {
+        color: #64748b;
+        font-size: 0.72rem;
+        margin-top: 0.25rem;
+        overflow-wrap: anywhere;
+    }
+
+    .lab6-tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .validation-summary-errors {
+        background: #431407;
+        border: 1px solid #fb923c;
+        border-radius: 8px;
+        color: #fed7aa;
+        font-size: 0.82rem;
+        margin-top: 1rem;
+        padding: 0.8rem 1rem;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    @@media (max-width: 640px) {
+        .iterator-row {
+            grid-template-columns: 1fr;
+        }
+
+        .metric-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1>Lab 6 <span class="badge">Behavioral Patterns</span></h1>
+    <p>Strategy, Iterator, Observer, Command si Memento aplicate pe comenzi si pachete de service.</p>
+</div>
+
+<div class="lab6-grid">
+    <div class="lab6-panel">
+        <strong>Strategy</strong>
+        <span>Schimba algoritmul de calcul fara sa schimbi comanda de service.</span>
+    </div>
+    <div class="lab6-panel">
+        <strong>Iterator</strong>
+        <span>Parcurge ierarhia Composite in moduri diferite.</span>
+    </div>
+    <div class="lab6-panel">
+        <strong>Observer</strong>
+        <span>Notifica receptia, clientul si mecanicul la schimbarea statusului.</span>
+    </div>
+    <div class="lab6-panel">
+        <strong>Command</strong>
+        <span>Executa, anuleaza si reface operatii pe aceeasi comanda.</span>
+    </div>
+    <div class="lab6-panel">
+        <strong>Memento</strong>
+        <span>Salveaza si restaureaza stari ale comenzii fara expunerea internelor.</span>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Strategy</h2>
+    <p>Comanda ramane aceeasi, dar algoritmul de cost se poate schimba intre Standard, Express si Loyalty.</p>
+
+    <form method="post" asp-page-handler="Strategy">
+        <div class="lab6-form-row">
+            <div class="lab6-field">
+                <label asp-for="StrategySelectedAlgorithm">Algoritm</label>
+                <select asp-for="StrategySelectedAlgorithm" class="btn btn-secondary lab6-select">
+                    @foreach (var algorithm in Model.StrategyAvailableAlgorithms)
+                    {
+                        <option value="@algorithm">@algorithm</option>
+                    }
+                </select>
+            </div>
+
+            <div class="lab6-field">
+                <label asp-for="StrategyPriority">Prioritate</label>
+                <select asp-for="StrategyPriority" class="btn btn-secondary lab6-select">
+                    @foreach (var priority in Model.StrategyAvailablePriorities)
+                    {
+                        <option value="@priority">@priority</option>
+                    }
+                </select>
+            </div>
+
+            <label class="lab6-check" style="min-height:42px;">
+                <input asp-for="StrategyIncludesLoanCar" />
+                <span>
+                    <span class="lab6-check-name">Masina de schimb</span>
+                    <span class="lab6-check-price">+100 cost fix</span>
+                </span>
+            </label>
+        </div>
+
+        <div style="margin-top:1rem;">
+            <div class="lab6-group-label">Servicii incluse</div>
+            <div class="lab6-check-grid">
+                @for (var i = 0; i < Model.StrategyAvailableServices.Count; i++)
+                {
+                    var service = Model.StrategyAvailableServices[i];
+                    var isChecked = Model.StrategySelectedServices.Contains(service.Name);
+
+                    <label class="lab6-check" for="strategy-service-@i">
+                        <input id="strategy-service-@i"
+                               type="checkbox"
+                               name="StrategySelectedServices"
+                               value="@service.Name"
+                               checked="@isChecked" />
+                        <span>
+                            <span class="lab6-check-name">@service.Name</span>
+                            <span class="lab6-check-price">@service.Price.ToString("C")</span>
+                        </span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div asp-validation-summary="All"></div>
+
+        <button type="submit" class="btn btn-primary">Calculeaza cost</button>
+    </form>
+
+    @if (Model.StrategyEstimate != null && Model.StrategyOrder != null)
+    {
+        var estimate = Model.StrategyEstimate;
+        var order = Model.StrategyOrder;
+
+        <div class="lab6-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Strategie</span>
+                    <span class="metric-value">@estimate.StrategyName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Cost baza</span>
+                    <span class="metric-value">@estimate.BaseCost.ToString("C")</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Ajustari</span>
+                    <span class="metric-value" style="color:@(estimate.Adjustments < 0 ? "#4ade80" : "#facc15")">@estimate.Adjustments.ToString("C")</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total</span>
+                    <span class="metric-value" style="color:#4ade80;">@estimate.TotalCost.ToString("C")</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="info-header">
+                    <div class="avatar">TC</div>
+                    <div>
+                        <div class="info-title">@order.Vehicle.Make @order.Vehicle.Model</div>
+                        <div class="info-sub">Order @order.OrderId · @order.Priority priority</div>
+                    </div>
+                    @if (order.IncludesLoanCar)
+                    {
+                        <span class="tag tag-green" style="margin-left:auto;">Loan car</span>
+                    }
+                </div>
+
+                <div class="services-label">Reguli aplicate</div>
+                <div class="lab6-list">
+                    @foreach (var rule in estimate.AppliedRules)
+                    {
+                        <div class="lab6-line">@rule</div>
+                    }
+                </div>
+
+                <div class="lab6-tag-row">
+                    @foreach (var service in order.Services)
+                    {
+                        <span class="tag tag-purple">@service</span>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Iterator</h2>
+    <p>Iteratorul parcurge pachetele compuse fara ca pagina sa cunoasca structura interna a arborelui.</p>
+
+    <form method="post" asp-page-handler="Iterator">
+        <div class="lab6-form-row">
+            <div class="lab6-field">
+                <label asp-for="IteratorSelectedPackageName">Pachet</label>
+                <select asp-for="IteratorSelectedPackageName" class="btn btn-secondary lab6-select">
+                    @foreach (var package in Model.IteratorAvailablePackages)
+                    {
+                        <option value="@package.Name">@package.Name - @package.Price.ToString("C")</option>
+                    }
+                </select>
+            </div>
+
+            <div class="lab6-field">
+                <label asp-for="IteratorTraversalMode">Mod parcurgere</label>
+                <select asp-for="IteratorTraversalMode" class="btn btn-secondary lab6-select">
+                    @foreach (var mode in Model.IteratorAvailableModes)
+                    {
+                        <option value="@mode.Value">@mode.Label</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Parcurge pachetul</button>
+        </div>
+    </form>
+
+    @if (Model.IteratorResult != null)
+    {
+        var result = Model.IteratorResult;
+
+        <div class="lab6-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Pachet</span>
+                    <span class="metric-value" style="font-size:0.95rem;">@result.PackageName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Elemente returnate</span>
+                    <span class="metric-value">@result.Rows.Count</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Compuse / Leaf</span>
+                    <span class="metric-value">@result.CompositeCount / @result.LeafCount</span>
+                </div>
+            </div>
+
+            <div class="lab6-list">
+                @foreach (var row in result.Rows)
+                {
+                    <div class="iterator-row" style="--depth:@row.Depth;">
+                        <div class="iterator-main">
+                            <div class="iterator-title">
+                                #@row.Index @row.Name
+                                <span class="tag @(row.IsComposite ? "tag-purple" : "tag-green")" style="margin-left:0.5rem;">
+                                    @(row.IsComposite ? "Composite" : "Leaf")
+                                </span>
+                            </div>
+                            <div class="iterator-path">@row.Path</div>
+                        </div>
+                        <span class="service-tag">@row.Price.ToString("C")</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Observer</h2>
+    <p>Subiectul publica schimbarea de status, iar observatorii isi actualizeaza propriile liste.</p>
+
+    <form method="post" asp-page-handler="Observer">
+        <div class="lab6-form-row">
+            <div class="lab6-field">
+                <label asp-for="ObserverTargetStatus">Status tinta</label>
+                <select asp-for="ObserverTargetStatus" class="btn btn-secondary lab6-select">
+                    @foreach (var status in Model.ObserverAvailableStatuses)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Trimite notificari</button>
+        </div>
+    </form>
+
+    @if (Model.ObserverResult != null)
+    {
+        var observer = Model.ObserverResult;
+
+        <div class="lab6-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Order ID</span>
+                    <span class="metric-value">@observer.OrderId</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Tranzitie finala</span>
+                    <span class="metric-value" style="font-size:0.95rem;">@observer.PreviousStatus -> @observer.CurrentStatus</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Ora schimbarii</span>
+                    <span class="metric-value" style="font-size:0.9rem;">@observer.ChangedAt.ToString("HH:mm:ss")</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Reception Dashboard</div>
+                <div class="lab6-list">
+                    @foreach (var item in observer.DashboardHistory)
+                    {
+                        <div class="lab6-line">@item</div>
+                    }
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Client Notifications</div>
+                <div class="lab6-list">
+                    @foreach (var item in observer.CustomerNotifications)
+                    {
+                        <div class="lab6-line">@item</div>
+                    }
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Technician Tasks</div>
+                <div class="lab6-list">
+                    @if (observer.TechnicianTasks.Count == 0)
+                    {
+                        <div class="lab6-line">Nu exista task pentru mecanic la acest status.</div>
+                    }
+                    @foreach (var item in observer.TechnicianTasks)
+                    {
+                        <div class="lab6-line">@item</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Command</h2>
+    <p>Operatiile pe comanda sunt obiecte separate, cu istoric, Undo si Redo.</p>
+
+    <form method="post" asp-page-handler="Command">
+        <div class="lab6-form-row">
+            <div class="lab6-field">
+                <label asp-for="CommandScenario">Scenariu</label>
+                <select asp-for="CommandScenario" class="btn btn-secondary lab6-select">
+                    @foreach (var scenario in Model.CommandScenarioOptions)
+                    {
+                        <option value="@scenario.Value">@scenario.Label</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Ruleaza comenzi</button>
+        </div>
+    </form>
+
+    @if (Model.CommandResult != null)
+    {
+        var command = Model.CommandResult;
+
+        <div class="lab6-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Scenariu</span>
+                    <span class="metric-value" style="font-size:0.95rem;">@command.ScenarioTitle</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Pending / Undo / Redo</span>
+                    <span class="metric-value">@command.PendingCount / @command.UndoCount / @command.RedoCount</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Prioritate</span>
+                    <span class="metric-value">@command.Order.Priority</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="info-header">
+                    <div class="avatar">CMD</div>
+                    <div>
+                        <div class="info-title">@command.Order.Vehicle</div>
+                        <div class="info-sub">@command.Order.OrderId · @command.Order.ScheduledDate.ToString("dd.MM.yyyy HH:mm")</div>
+                    </div>
+                    <span class="tag tag-blue" style="margin-left:auto;">@command.Order.TechnicianName</span>
+                </div>
+
+                <div class="services-label">Servicii curente</div>
+                <div class="lab6-tag-row">
+                    @foreach (var service in command.Order.Services)
+                    {
+                        <span class="tag tag-green">@service</span>
+                    }
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Istoric invoker</div>
+                <div class="lab6-list">
+                    @foreach (var item in command.History)
+                    {
+                        <div class="lab6-line">@item</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Memento</h2>
+    <p>Originatorul salveaza snapshot-uri, iar istoricul poate restaura starea anterioara.</p>
+
+    <form method="post" asp-page-handler="Memento">
+        <button type="submit" class="btn btn-primary">Ruleaza Undo / Redo cu snapshot-uri</button>
+    </form>
+
+    @if (Model.MementoResult != null)
+    {
+        var memento = Model.MementoResult;
+
+        <div class="lab6-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Undo</span>
+                    <span class="metric-value" style="color:@(memento.UndoSucceeded ? "#4ade80" : "#f87171")">
+                        @(memento.UndoSucceeded ? "reusit" : "esuat")
+                    </span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Redo</span>
+                    <span class="metric-value" style="color:@(memento.RedoSucceeded ? "#4ade80" : "#f87171")">
+                        @(memento.RedoSucceeded ? "reusit" : "esuat")
+                    </span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Undo / Redo stack</span>
+                    <span class="metric-value">@memento.UndoCount / @memento.RedoCount</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Evolutia comenzii</div>
+                <div class="lab6-list">
+                    @foreach (var snapshot in memento.Snapshots)
+                    {
+                        <div class="lab6-line">
+                            <strong style="color:#e2e8f0;">@snapshot.Label</strong>
+                            <div>@snapshot.Priority · @snapshot.TechnicianName · @snapshot.ScheduledDate.ToString("dd.MM.yyyy HH:mm")</div>
+                            <div>@string.Join(", ", snapshot.Services)</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Snapshot-uri salvate</div>
+                <div class="lab6-list">
+                    @foreach (var snapshot in memento.StoredSnapshots)
+                    {
+                        <div class="lab6-line">@snapshot</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

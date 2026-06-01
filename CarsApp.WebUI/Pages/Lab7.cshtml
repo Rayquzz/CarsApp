@@ -1,0 +1,460 @@
+@page
+@model CarsApp.WebUI.Pages.Lab7Model
+@{
+    ViewData["Title"] = "Lab 7";
+}
+
+<style>
+    .lab7-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 0.9rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .lab7-panel,
+    .lab7-line,
+    .lab7-output {
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+    }
+
+    .lab7-panel {
+        padding: 1rem;
+    }
+
+    .lab7-panel strong {
+        color: #e2e8f0;
+        display: block;
+        font-size: 0.95rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .lab7-panel span {
+        color: #64748b;
+        font-size: 0.78rem;
+        line-height: 1.5;
+    }
+
+    .lab7-form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        align-items: flex-end;
+        margin-top: 1rem;
+    }
+
+    .lab7-field {
+        min-width: 180px;
+        flex: 1 1 180px;
+    }
+
+    .lab7-field label,
+    .lab7-group-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+
+    .lab7-input,
+    .lab7-select {
+        width: 100%;
+        margin: 0;
+        color: #e2e8f0;
+    }
+
+    .lab7-input {
+        background: #1e2235;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+        padding: 0.6rem 0.75rem;
+        font: inherit;
+        font-size: 0.875rem;
+    }
+
+    .lab7-check {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        background: #0d0f1a;
+        border: 1px solid #2d3148;
+        border-radius: 8px;
+        min-height: 42px;
+        padding: 0.65rem 0.8rem;
+        cursor: pointer;
+    }
+
+    .lab7-check input {
+        accent-color: #7c6af7;
+    }
+
+    .lab7-result {
+        margin-top: 1.3rem;
+    }
+
+    .lab7-list {
+        display: grid;
+        gap: 0.55rem;
+        margin-top: 0.75rem;
+    }
+
+    .lab7-line {
+        color: #dbeafe;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .lab7-line strong {
+        color: #e2e8f0;
+    }
+
+    .lab7-output {
+        color: #a3e635;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.8rem;
+        line-height: 1.65;
+        margin-top: 0.75rem;
+        min-height: 90px;
+        overflow-x: auto;
+        padding: 0.9rem;
+        white-space: pre-wrap;
+    }
+
+    .lab7-tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .validation-summary-errors {
+        background: #431407;
+        border: 1px solid #fb923c;
+        border-radius: 8px;
+        color: #fed7aa;
+        font-size: 0.82rem;
+        margin-top: 1rem;
+        padding: 0.8rem 1rem;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    @@media (max-width: 640px) {
+        .metric-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1>Lab 7 <span class="badge">Behavioral Patterns</span></h1>
+    <p>Chain of Responsibility, State, Mediator, Template Method si Visitor aplicate pe fluxul de service auto.</p>
+</div>
+
+<div class="lab7-grid">
+    <div class="lab7-panel">
+        <strong>Chain of Responsibility</strong>
+        <span>Cererile trec prin receptie, diagnoza, tehnician senior si manager.</span>
+    </div>
+    <div class="lab7-panel">
+        <strong>State</strong>
+        <span>Comanda isi schimba comportamentul dupa starea workflow-ului.</span>
+    </div>
+    <div class="lab7-panel">
+        <strong>Mediator</strong>
+        <span>Departamentele atelierului sunt coordonate printr-un mediator central.</span>
+    </div>
+    <div class="lab7-panel">
+        <strong>Template Method</strong>
+        <span>Rapoartele refolosesc acelasi schelet si personalizeaza sectiunile.</span>
+    </div>
+    <div class="lab7-panel">
+        <strong>Visitor</strong>
+        <span>Acelasi document este exportat prin operatii CSV, XML sau PDF text.</span>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Chain of Responsibility</h2>
+    <p>Fiecare handler decide daca proceseaza cererea sau o trimite mai departe in lant.</p>
+
+    <form method="post" asp-page-handler="Chain">
+        <div class="lab7-form-row">
+            <div class="lab7-field">
+                <label asp-for="ChainRequestedService">Serviciu</label>
+                <input asp-for="ChainRequestedService" class="lab7-input" />
+            </div>
+            <div class="lab7-field">
+                <label asp-for="ChainComplexity">Complexitate</label>
+                <select asp-for="ChainComplexity" class="btn btn-secondary lab7-select">
+                    @foreach (var item in Model.ChainComplexities)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+            <div class="lab7-field">
+                <label asp-for="ChainEstimatedCost">Cost estimat</label>
+                <input asp-for="ChainEstimatedCost" class="lab7-input" type="number" min="0" step="50" />
+            </div>
+            <label class="lab7-check">
+                <input asp-for="ChainIsVipCustomer" />
+                <span>Client VIP</span>
+            </label>
+            <label class="lab7-check">
+                <input asp-for="ChainRequiresManagerApproval" />
+                <span>Aprobare manager</span>
+            </label>
+            <button type="submit" class="btn btn-primary">Proceseaza cererea</button>
+        </div>
+
+        <div asp-validation-summary="All"></div>
+    </form>
+
+    @if (Model.ChainResult != null)
+    {
+        <div class="lab7-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Handler</span>
+                    <span class="metric-value">@Model.ChainResult.HandlerName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Departament</span>
+                    <span class="metric-value">@Model.ChainResult.Department</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Follow-up</span>
+                    <span class="metric-value">@(Model.ChainResult.RequiresFollowUp ? "Da" : "Nu")</span>
+                </div>
+            </div>
+            <div class="lab7-line" style="margin-top:0.75rem;">@Model.ChainResult.Message</div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>State</h2>
+    <p>Actiunile valide sunt implementate in clase de stare diferite, iar tranzitiile sunt salvate in istoric.</p>
+
+    <form method="post" asp-page-handler="State">
+        <div class="lab7-form-row">
+            <div class="lab7-field">
+                <label asp-for="StateScenario">Scenariu</label>
+                <select asp-for="StateScenario" class="btn btn-secondary lab7-select">
+                    @foreach (var scenario in Model.StateScenarios)
+                    {
+                        <option value="@scenario.Value">@scenario.Label</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Ruleaza workflow</button>
+        </div>
+    </form>
+
+    @if (Model.StateResult != null)
+    {
+        <div class="lab7-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Stare finala</span>
+                    <span class="metric-value">@Model.StateResult.CurrentState</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value">@Model.StateResult.CurrentStatus</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Actiuni</span>
+                    <span class="metric-value">@Model.StateResult.Actions.Count</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Actiuni executate</div>
+                <div class="lab7-list">
+                    @foreach (var action in Model.StateResult.Actions)
+                    {
+                        <div class="lab7-line">
+                            <strong>@action.FromState -> @action.ToState</strong>
+                            <div>@action.Message</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Istoric workflow</div>
+                <div class="lab7-list">
+                    @foreach (var item in Model.StateResult.History)
+                    {
+                        <div class="lab7-line">@item</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Mediator</h2>
+    <p>Receptia, tehnicienii si departamentul de piese trimit evenimente catre mediator, iar acesta coordoneaza restul.</p>
+
+    <form method="post" asp-page-handler="Mediator">
+        <div class="lab7-form-row">
+            <div class="lab7-field">
+                <label asp-for="MediatorScenario">Scenariu</label>
+                <select asp-for="MediatorScenario" class="btn btn-secondary lab7-select">
+                    @foreach (var scenario in Model.MediatorScenarios)
+                    {
+                        <option value="@scenario.Value">@scenario.Label</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Coordoneaza atelierul</button>
+        </div>
+    </form>
+
+    @if (Model.MediatorResult != null)
+    {
+        <div class="lab7-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Evenimente</span>
+                    <span class="metric-value">@Model.MediatorResult.CoordinationLog.Count</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Notificari</span>
+                    <span class="metric-value">@Model.MediatorResult.Notifications.Count</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Note atelier</span>
+                    <span class="metric-value">@Model.MediatorResult.WorkNotes.Count</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Coordination log</div>
+                <div class="lab7-list">
+                    @foreach (var entry in Model.MediatorResult.CoordinationLog)
+                    {
+                        <div class="lab7-line">
+                            <strong>@entry.Sender - @entry.Event</strong>
+                            <div>@entry.Action</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top:1rem;">
+                <div class="services-label">Notificari client</div>
+                <div class="lab7-list">
+                    @foreach (var notification in Model.MediatorResult.Notifications)
+                    {
+                        <div class="lab7-line">@notification</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Template Method</h2>
+    <p>Metoda sablon genereaza aceeasi structura generala, iar clasele derivate completeaza detaliile specifice.</p>
+
+    <form method="post" asp-page-handler="Template">
+        <div class="lab7-form-row">
+            <div class="lab7-field">
+                <label asp-for="TemplateReportType">Tip raport</label>
+                <select asp-for="TemplateReportType" class="btn btn-secondary lab7-select">
+                    @foreach (var report in Model.TemplateReportTypes)
+                    {
+                        <option value="@report">@report</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Genereaza raport</button>
+        </div>
+    </form>
+
+    @if (Model.TemplateResult != null)
+    {
+        <div class="lab7-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Raport</span>
+                    <span class="metric-value">@Model.TemplateResult.ReportType</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Sectiuni</span>
+                    <span class="metric-value">@Model.TemplateResult.Sections.Count</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Cost comanda</span>
+                    <span class="metric-value">@Model.TemplateResult.OrderCost.ToString("C")</span>
+                </div>
+            </div>
+
+            <div class="lab7-list">
+                @foreach (var reportSection in Model.TemplateResult.Sections)
+                {
+                    <div class="lab7-line">@reportSection</div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <h2>Visitor</h2>
+    <p>Documentul ramane neschimbat, iar visitorul selectat aplica operatia de export.</p>
+
+    <form method="post" asp-page-handler="Visitor">
+        <div class="lab7-form-row">
+            <div class="lab7-field">
+                <label asp-for="VisitorExportFormat">Format export</label>
+                <select asp-for="VisitorExportFormat" class="btn btn-secondary lab7-select">
+                    @foreach (var format in Model.VisitorExportFormats)
+                    {
+                        <option value="@format">@format</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Exporta documentul</button>
+        </div>
+    </form>
+
+    @if (Model.VisitorResult != null)
+    {
+        <div class="lab7-result">
+            <div class="metric-row">
+                <div class="metric-card">
+                    <span class="metric-label">Visitor</span>
+                    <span class="metric-value">@Model.VisitorResult.VisitorName</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Elemente</span>
+                    <span class="metric-value">@Model.VisitorResult.ElementCount</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Format</span>
+                    <span class="metric-value">@Model.VisitorResult.Format</span>
+                </div>
+            </div>
+            <pre class="lab7-output">@Model.VisitorResult.Output</pre>
+        </div>
+    }
+</div>

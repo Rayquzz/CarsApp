@@ -1,0 +1,28 @@
+@page
+@model Lab4Model
+@{
+    ViewData["Title"] = "Lab 4";
+}
+
+<div class="page-header">
+    <h1>Lab 4 <span class="badge">Structural Patterns</span></h1>
+    <p>Composite, Façade și Adapter aplicate pe fluxul de service auto.</p>
+</div>
+
+<div class="card">
+    <h2>Pachete de Service <span class="badge">Composite</span></h2>
+    <p>Construirea pachetelor simple și compuse pentru operații de service.</p>
+    <a href="/Pachete" class="btn btn-primary">Deschide Pachete</a>
+</div>
+
+<div class="card">
+    <h2>Programare Service <span class="badge">Façade</span></h2>
+    <p>Un flux simplificat pentru programare, cu verificări și notificări ascunse în spatele unei fațade.</p>
+    <a href="/Programare" class="btn btn-primary">Deschide Programare</a>
+</div>
+
+<div class="card">
+    <h2>Plată Online <span class="badge">Adapter</span></h2>
+    <p>Procesarea plății printr-o interfață adaptată pentru serviciul extern de payment.</p>
+    <a href="/Plata" class="btn btn-primary">Deschide Plată</a>
+</div>
